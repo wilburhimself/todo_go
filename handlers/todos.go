@@ -135,3 +135,19 @@ func DeleteTodoHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl := template.Must(template.ParseFiles("templates/todo-item.html"))
 	tmpl.ExecuteTemplate(w, "todo-item", todo)
 }
+
+func CancelEditHandler(w http.ResponseWriter, r *http.Request) {
+	db := lib.ReturnDB()
+
+	todoID, err := GetTodoID(r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	todo := models.Todo{}
+	db.First(&todo, todoID)
+
+	tmpl := template.Must(template.ParseFiles("templates/todo-item.html"))
+	tmpl.ExecuteTemplate(w, "todo-item", todo)
+}

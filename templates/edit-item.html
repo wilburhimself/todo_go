@@ -3,6 +3,7 @@
   <form hx-post="/todos/{{.ID}}/update" hx-swap="outerHTML" hx-target="closest .todo-item" class="flex">
     <input type="text" name="title" value="{{.Title}}" class="p-2 border border-gray-300 rounded" />
     <input type="submit" value="Save" class="p-2 border border-gray-300 rounded bg-blue-500 text-white" />
+    <a hx-get="/todos/{{.ID}}/cancel" hx-swap="outerHTML" hx-target="closest .todo-item" class="p-2 border border-gray-300 rounded bg-red-500 text-white">Cancel</a>
   </form>
 </div>
 {{end}}

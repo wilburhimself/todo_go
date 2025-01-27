@@ -28,6 +28,8 @@ func TodosHandler(w http.ResponseWriter, r *http.Request) {
 		handlers.UpdateTodoHandler(w, r)
 	case action == "delete" && r.Method == "DELETE":
 		handlers.DeleteTodoHandler(w, r)
+	case action == "cancel" && r.Method == "GET":
+		handlers.CancelEditHandler(w, r)
 	default:
 		http.Error(w, "Not found", http.StatusNotFound)
 	}
