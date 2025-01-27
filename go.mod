@@ -1,5 +1,4 @@
-module github.com/wilburhimself/go_todo_list
-
+module github.com/wilburhimself/todo_go
 go 1.22.3
 
 require (

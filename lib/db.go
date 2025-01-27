@@ -1,7 +1,7 @@
 package lib
 
 import (
-	"github.com/wilburhimself/go_todo_list/models"
+	"github.com/wilburhimself/todo_go/models"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )

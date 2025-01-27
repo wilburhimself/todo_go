@@ -8,8 +8,8 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/wilburhimself/go_todo_list/lib"
-	"github.com/wilburhimself/go_todo_list/models"
+	"github.com/wilburhimself/todo_go/lib"
+	"github.com/wilburhimself/todo_go/models"
 )
 
 func IndexHandler(w http.ResponseWriter, r *http.Request) {

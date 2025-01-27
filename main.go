@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/wilburhimself/go_todo_list/handlers"
+	"github.com/wilburhimself/todo_go/handlers"
 )
 
 func TodosHandler(w http.ResponseWriter, r *http.Request) {
