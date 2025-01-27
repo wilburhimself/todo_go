@@ -1,20 +1,20 @@
 {{define "todo-item"}}
 <li class="todo-item flex" data-id="{{.ID}}">
-    <div class="inner">
+    <div class="inner group">
         <input
-        type="checkbox"
-        {{if .Done}}checked="checked"{{end}}
-        hx-post="/todos/{{.ID}}/toggle"
-        hx-vals="js:{checked:this.checked ? 'true' : 'false'}"
-        hx-swap="outerHTML"
-        hx-target="closest .todo-item"
-        class="mr-2"
-    />
-    <span class="{{if .Done}}line-through{{end}}">{{.Title}}</span>
-    <small>
-        <a hx-get="/todos/{{.ID}}/edit" hx-swap="outerHTML" hx-target="closest .todo-item > .inner" class="mr-2 text-blue-500">Edit</a>
-        <a href="/todos/{{.ID}}/delete" class="text-red-500">Delete</a>
-    </small>
+            type="checkbox"
+            {{if .Done}}checked="checked"{{end}}
+            hx-post="/todos/{{.ID}}/toggle"
+            hx-vals="js:{checked:this.checked ? 'true' : 'false'}"
+            hx-swap="outerHTML"
+            hx-target="closest .todo-item"
+            class="mr-2"
+        />
+        <span class="{{if .Done}}line-through{{end}}">{{.Title}}</span>
+        <small class="invisible group-hover:visible ml-2">
+            <a hx-get="/todos/{{.ID}}/edit" hx-swap="outerHTML" hx-target="closest .todo-item > .inner" class="cursor-pointer mr-2 text-blue-500">Edit</a>
+            <a hx-delete="/todos/{{.ID}}/delete" hx-swap="delete" hx-target="closest .todo-item" class="cursor-pointer text-red-500" onclick="return confirm('Are you sure?')">Delete</a>
+        </small>
     </div>
 </li>
 {{end}}

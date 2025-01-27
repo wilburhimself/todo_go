@@ -137,6 +137,24 @@ func updateTodoHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl.ExecuteTemplate(w, "todo-item", todo)
 }
 
+func deleteTodoHandler(w http.ResponseWriter, r *http.Request) {
+	db := returnDB()
+
+	todoID, err := getTodoID(r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	todo := models.Todo{}
+	db.First(&todo, todoID)
+
+	db.Delete(&todo)
+
+	tmpl := template.Must(template.ParseFiles("templates/todo-item.html"))
+	tmpl.ExecuteTemplate(w, "todo-item", todo)
+}
+
 func todosHandler(w http.ResponseWriter, r *http.Request) {
 	parts := strings.Split(r.URL.Path, "/")
 	if len(parts) < 3 {
@@ -156,6 +174,8 @@ func todosHandler(w http.ResponseWriter, r *http.Request) {
 		editTodoHandler(w, r)
 	case action == "update" && r.Method == "POST":
 		updateTodoHandler(w, r)
+	case action == "delete" && r.Method == "DELETE":
+		deleteTodoHandler(w, r)
 	default:
 		http.Error(w, "Not found", http.StatusNotFound)
 	}
