@@ -1,6 +1,7 @@
 {{define "todo-item"}}
-<li class="todo-item flex">
-    <input
+<li class="todo-item flex" data-id="{{.ID}}">
+    <div class="inner">
+        <input
         type="checkbox"
         {{if .Done}}checked="checked"{{end}}
         hx-post="/todos/{{.ID}}/toggle"
@@ -9,7 +10,11 @@
         hx-target="closest .todo-item"
         class="mr-2"
     />
-
     <span class="{{if .Done}}line-through{{end}}">{{.Title}}</span>
+    <small>
+        <a hx-get="/todos/{{.ID}}/edit" hx-swap="outerHTML" hx-target="closest .todo-item > .inner" class="mr-2 text-blue-500">Edit</a>
+        <a href="/todos/{{.ID}}/delete" class="text-red-500">Delete</a>
+    </small>
+    </div>
 </li>
 {{end}}

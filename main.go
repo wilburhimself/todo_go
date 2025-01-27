@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"html/template"
 	"log"
 	"net/http"
@@ -30,7 +31,7 @@ func returnDB() *gorm.DB {
 	return db
 }
 
-func helloWorldHandler(w http.ResponseWriter, r *http.Request) {
+func dashboardHandler(w http.ResponseWriter, r *http.Request) {
 	db := returnDB()
 
 	todos := []models.Todo{}
@@ -60,19 +61,26 @@ func addTodoHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl.ExecuteTemplate(w, "todo-item", todo)
 }
 
-func toggleTodoHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println("toggleTodoHandler")
-	db := returnDB()
-
+func getTodoID(r *http.Request) (uint, error) {
 	parts := strings.Split(r.URL.Path, "/")
-	if len(parts) < 4 || parts[3] != "toggle" {
-		http.Error(w, "Invalid path", http.StatusBadRequest)
-		return
+	if len(parts) < 4 {
+		return 0, errors.New("invalid path")
 	}
 
-	todoID, err := strconv.Atoi(parts[2])
+	id, err := strconv.Atoi(parts[2])
 	if err != nil {
-		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return 0, err
+	}
+
+	return uint(id), nil
+}
+
+func toggleTodoHandler(w http.ResponseWriter, r *http.Request) {
+	db := returnDB()
+
+	todoID, err := getTodoID(r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -88,11 +96,76 @@ func toggleTodoHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl.ExecuteTemplate(w, "todo-item", todo)
 }
 
+func editTodoHandler(w http.ResponseWriter, r *http.Request) {
+	db := returnDB()
+
+	todoID, err := getTodoID(r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	todo := models.Todo{}
+	db.First(&todo, todoID)
+
+	log.Println(todo)
+
+	tmpl := template.Must(template.ParseFiles("templates/edit-item.html"))
+	tmpl.ExecuteTemplate(w, "edit-item", todo)
+}
+
+func updateTodoHandler(w http.ResponseWriter, r *http.Request) {
+	db := returnDB()
+
+	todoID, err := getTodoID(r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	todo := models.Todo{}
+	db.First(&todo, todoID)
+
+	log.Println(todo)
+
+	title := r.FormValue("title")
+	todo.Title = title
+
+	db.Save(&todo)
+
+	tmpl := template.Must(template.ParseFiles("templates/todo-item.html"))
+	tmpl.ExecuteTemplate(w, "todo-item", todo)
+}
+
+func todosHandler(w http.ResponseWriter, r *http.Request) {
+	parts := strings.Split(r.URL.Path, "/")
+	if len(parts) < 3 {
+		http.Error(w, "Invalid path", http.StatusBadRequest)
+		return
+	}
+
+	action := ""
+	if len(parts) >= 4 {
+		action = parts[3]
+	}
+
+	switch {
+	case action == "toggle" && r.Method == "POST":
+		toggleTodoHandler(w, r)
+	case action == "edit" && r.Method == "GET":
+		editTodoHandler(w, r)
+	case action == "update" && r.Method == "POST":
+		updateTodoHandler(w, r)
+	default:
+		http.Error(w, "Not found", http.StatusNotFound)
+	}
+}
+
 func main() {
 	initDB()
 
-	http.HandleFunc("/", helloWorldHandler)
+	http.HandleFunc("/", dashboardHandler)
 	http.HandleFunc("/add", addTodoHandler)
-	http.HandleFunc("/todos/", toggleTodoHandler)
+	http.HandleFunc("/todos/", todosHandler)
 	http.ListenAndServe(":8080", nil)
 }
