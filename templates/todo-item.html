@@ -1,0 +1,15 @@
+{{define "todo-item"}}
+<li class="todo-item flex">
+    <input
+        type="checkbox"
+        {{if .Done}}checked="checked"{{end}}
+        hx-post="/todos/{{.ID}}/toggle"
+        hx-vals="js:{checked:this.checked ? 'true' : 'false'}"
+        hx-swap="outerHTML"
+        hx-target="closest .todo-item"
+        class="mr-2"
+    />
+
+    <span class="{{if .Done}}line-through{{end}}">{{.Title}}</span>
+</li>
+{{end}}
