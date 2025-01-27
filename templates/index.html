@@ -8,7 +8,7 @@
   <body class="p-4">
     <h1 class="text-3xl font-bold underline">Todo List</h1>
     <div class="py-4">
-      <form hx-post="/add" hx-target="#todos-list" hx-swap="beforebegin" hx-on::after-request="this.reset()">
+      <form hx-post="/todos/add" hx-target="#todos-list" hx-swap="beforebegin" hx-on::after-request="this.reset()">
         <input type="text" name="title" class="p-2 border border-gray-300 rounded" />
         <input type="submit" value="Add todo" class="cursor-pointer p-2 border border-gray-300 rounded bg-blue-500 text-white" />
       </form>

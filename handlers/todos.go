@@ -4,13 +4,15 @@ import (
 	"errors"
 	"log"
 	"net/http"
-	"strconv"
-	"strings"
 	"text/template"
 
 	"github.com/wilburhimself/todo_go/lib"
 	"github.com/wilburhimself/todo_go/models"
 )
+
+type key int
+
+const todoIDKey key = 0
 
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	db := lib.ReturnDB()
@@ -42,24 +44,25 @@ func AddTodoHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl.ExecuteTemplate(w, "todo-item", todo)
 }
 
-func GetTodoID(r *http.Request) (uint, error) {
-	parts := strings.Split(r.URL.Path, "/")
-	if len(parts) < 4 {
-		return 0, errors.New("invalid path")
+func GetTodoID(r *http.Request) (string, error) {
+	todoIDVal := r.Context().Value(lib.TodoIDKey)
+	if todoIDVal == nil {
+		return "", errors.New("todoID not found in context")
 	}
 
-	id, err := strconv.Atoi(parts[2])
-	if err != nil {
-		return 0, err
+	todoID, ok := todoIDVal.(string)
+	if !ok {
+		return "", errors.New("todoID is not a string")
 	}
 
-	return uint(id), nil
+	return todoID, nil
 }
 
 func ToggleTodoHandler(w http.ResponseWriter, r *http.Request) {
 	db := lib.ReturnDB()
 
 	todoID, err := GetTodoID(r)
+
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

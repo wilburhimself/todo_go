@@ -1,7 +1,9 @@
 module github.com/wilburhimself/todo_go
+
 go 1.22.3
 
 require (
+	github.com/go-chi/chi/v5 v5.2.0
 	gorm.io/driver/sqlite v1.5.7
 	gorm.io/gorm v1.25.12
 )
