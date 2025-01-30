@@ -6,8 +6,9 @@ import (
 	"net/http"
 	"text/template"
 
-	"github.com/wilburhimself/todo_go/lib"
+	"github.com/wilburhimself/todo_go/database"
 	"github.com/wilburhimself/todo_go/models"
+	"github.com/wilburhimself/todo_go/types"
 )
 
 type key int
@@ -15,7 +16,7 @@ type key int
 const todoIDKey key = 0
 
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
-	db := lib.ReturnDB()
+	db := database.GetDB()
 
 	todos := []models.Todo{}
 	db.Order("id desc").Find(&todos)
@@ -29,7 +30,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func AddTodoHandler(w http.ResponseWriter, r *http.Request) {
-	db := lib.ReturnDB()
+	db := database.GetDB()
 
 	title := r.FormValue("title")
 
@@ -45,7 +46,7 @@ func AddTodoHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetTodoID(r *http.Request) (string, error) {
-	todoIDVal := r.Context().Value(lib.TodoIDKey)
+	todoIDVal := r.Context().Value(types.TodoIDKey)
 	if todoIDVal == nil {
 		return "", errors.New("todoID not found in context")
 	}
@@ -59,7 +60,7 @@ func GetTodoID(r *http.Request) (string, error) {
 }
 
 func ToggleTodoHandler(w http.ResponseWriter, r *http.Request) {
-	db := lib.ReturnDB()
+	db := database.GetDB()
 
 	todoID, err := GetTodoID(r)
 
@@ -81,7 +82,7 @@ func ToggleTodoHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func EditTodoHandler(w http.ResponseWriter, r *http.Request) {
-	db := lib.ReturnDB()
+	db := database.GetDB()
 
 	todoID, err := GetTodoID(r)
 	if err != nil {
@@ -99,7 +100,7 @@ func EditTodoHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateTodoHandler(w http.ResponseWriter, r *http.Request) {
-	db := lib.ReturnDB()
+	db := database.GetDB()
 
 	todoID, err := GetTodoID(r)
 	if err != nil {
@@ -122,7 +123,7 @@ func UpdateTodoHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteTodoHandler(w http.ResponseWriter, r *http.Request) {
-	db := lib.ReturnDB()
+	db := database.GetDB()
 
 	todoID, err := GetTodoID(r)
 	if err != nil {
@@ -140,7 +141,7 @@ func DeleteTodoHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func CancelEditHandler(w http.ResponseWriter, r *http.Request) {
-	db := lib.ReturnDB()
+	db := database.GetDB()
 
 	todoID, err := GetTodoID(r)
 	if err != nil {

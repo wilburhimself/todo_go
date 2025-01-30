@@ -1,4 +1,4 @@
-package main
+package lib
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/wilburhimself/todo_go/handlers"
-	"github.com/wilburhimself/todo_go/lib"
+	"github.com/wilburhimself/todo_go/types"
 )
 
 func Router() chi.Router {
@@ -31,7 +31,7 @@ func TodoCtx(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		todoID := chi.URLParam(r, "id")
 
-		ctx := context.WithValue(r.Context(), lib.TodoIDKey, todoID)
+		ctx := context.WithValue(r.Context(), types.TodoIDKey, todoID)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
