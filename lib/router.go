@@ -11,16 +11,29 @@ import (
 
 func Router() chi.Router {
 	r := chi.NewRouter()
-	r.Get("/", handlers.IndexHandler)
-	r.Route("/todos", func(r chi.Router) {
-		r.Post("/add", handlers.AddTodoHandler)
-		r.Route("/{id}", func(r chi.Router) {
-			r.Use(TodoCtx)
-			r.Post("/toggle", handlers.ToggleTodoHandler)
-			r.Get("/edit", handlers.EditTodoHandler)
-			r.Post("/update", handlers.UpdateTodoHandler)
-			r.Delete("/delete", handlers.DeleteTodoHandler)
-			r.Get("/cancel", handlers.CancelEditHandler)
+
+	// Public routes
+	r.Get("/login", handlers.LoginPageHandler)
+	r.Post("/login", handlers.LoginHandler)
+	r.Get("/register", handlers.RegisterPageHandler)
+	r.Post("/register", handlers.RegisterHandler)
+	r.Get("/logout", handlers.LogoutHandler)
+
+	// Protected routes
+	r.Group(func(r chi.Router) {
+		r.Use(AuthMiddleware)
+
+		r.Get("/", handlers.IndexHandler)
+		r.Route("/todos", func(r chi.Router) {
+			r.Post("/add", handlers.AddTodoHandler)
+			r.Route("/{id}", func(r chi.Router) {
+				r.Use(TodoCtx)
+				r.Post("/toggle", handlers.ToggleTodoHandler)
+				r.Get("/edit", handlers.EditTodoHandler)
+				r.Post("/update", handlers.UpdateTodoHandler)
+				r.Delete("/delete", handlers.DeleteTodoHandler)
+				r.Get("/cancel", handlers.CancelEditHandler)
+			})
 		})
 	})
 

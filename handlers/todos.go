@@ -11,15 +11,32 @@ import (
 	"github.com/wilburhimself/todo_go/types"
 )
 
-type key int
+func GetCurrentUser(r *http.Request) (models.User, error) {
+	userVal := r.Context().Value(types.UserKey)
+	if userVal == nil {
+		return models.User{}, errors.New("user not found in context")
+	}
 
-const todoIDKey key = 0
+	user, ok := userVal.(models.User)
+	if !ok {
+		return models.User{}, errors.New("user is not of correct type")
+	}
+
+	return user, nil
+}
 
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	db := database.GetDB()
 
+	// Get current user
+	user, err := GetCurrentUser(r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	todos := []models.Todo{}
-	db.Order("id desc").Find(&todos)
+	db.Where("user_id = ?", user.ID).Order("id desc").Find(&todos)
 
 	data := map[string][]models.Todo{
 		"todos": todos,
@@ -32,11 +49,19 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 func AddTodoHandler(w http.ResponseWriter, r *http.Request) {
 	db := database.GetDB()
 
+	// Get current user
+	user, err := GetCurrentUser(r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	title := r.FormValue("title")
 
 	todo := models.Todo{
-		Title: title,
-		Done:  false,
+		Title:  title,
+		Done:   false,
+		UserID: user.ID,
 	}
 
 	db.Create(&todo)

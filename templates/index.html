@@ -6,7 +6,10 @@
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
   </head>
   <body class="p-4">
-    <h1 class="text-3xl font-bold underline">Todo List</h1>
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold underline">Todo List</h1>
+      <a href="/logout" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Logout</a>
+    </div>
     <div class="py-4">
       <form hx-post="/todos/add" hx-target="#todos-list" hx-swap="beforebegin" hx-on::after-request="this.reset()">
         <input type="text" name="title" class="p-2 border border-gray-300 rounded" />

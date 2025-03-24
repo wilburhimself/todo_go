@@ -17,7 +17,7 @@ func InitDB(dbPath string) error {
 	}
 
 	// Run migrations
-	err = db.AutoMigrate(&models.Todo{})
+	err = db.AutoMigrate(&models.Todo{}, &models.User{})
 	if err != nil {
 		return err
 	}
